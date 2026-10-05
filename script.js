@@ -1,6 +1,6 @@
 const WAITLIST_ENDPOINT = '';
 const conversations = [
-  {id:'aicha',name:'Aïcha Diabaté',initials:'AD',color:'rose',channel:'whatsapp',city:'Abidjan',time:'12:42',preview:'Parfait, je le prends !',loyal:true,price:18000,product:'Sac Sira',insight:'Aïcha revient pour la 4e fois. Pensez à la remercier !',messages:[{text:'Bonjour Aya ! Le sac de votre story est encore disponible ?',time:'12:40'},{text:'Bonjour Aïcha ! Oui, le Sira est à 18 000 F CFA. Je vous le réserve ?',reply:true,time:'12:41'},{text:'Parfait, je le prends ! Livraison à Cocody possible ?',time:'12:42'}]},
+  {id:'aicha',name:'Aïcha Diabaté',initials:'AD',color:'rose',channel:'whatsapp',city:'Abidjan',time:'12:42',preview:'Parfait, je le prends !',loyal:true,price:18000,product:'Sac Sira',insight:'Aïcha revient pour la 4e fois. Pensez à la remercier !',messages:[{text:'Bonjour Messan ! Le sac de votre story est encore disponible ?',time:'12:40'},{text:'Bonjour Aïcha ! Oui, le Sira est à 18 000 F CFA. Je vous le réserve ?',reply:true,time:'12:41'},{text:'Parfait, je le prends ! Livraison à Cocody possible ?',time:'12:42'}]},
   {id:'moussa',name:'Moussa Traoré',initials:'MT',color:'blue',channel:'tiktok',city:'Abidjan',time:'12:38',preview:'Je viens de votre live !',loyal:false,price:18000,product:'Sac Sira',insight:'Moussa découvre la boutique. Proposez-lui les détails du produit.',messages:[{text:'Bonjour ! Je viens de votre live. Combien coûte le sac ?',time:'12:37'},{text:'Bonjour Moussa ! Le Sira est à 18 000 F CFA. Vous cherchez une couleur en particulier ?',reply:true,time:'12:38'}]},
   {id:'aminata',name:'Aminata Coulibaly',initials:'AC',color:'yellow',channel:'whatsapp',city:'Abidjan',time:'12:25',preview:'Vous livrez à Marcory ?',loyal:true,price:18000,product:'Sac Sira',insight:'Aminata a déjà commandé. Confirmez son adresse avant la livraison.',messages:[{text:'Bonjour ! Vous livrez à Marcory ?',time:'12:24'},{text:'Bonjour Aminata ! Oui, quel quartier exactement ? Je vérifie le tarif avec le livreur.',reply:true,time:'12:25'}]},
   {id:'kevin',name:'Kévin N’Guessan',initials:'KN',color:'blue',channel:'tiktok',city:'Abidjan',time:'12:10',preview:'C’est pour un cadeau.',loyal:false,price:18000,product:'Sac Sira',insight:'Kévin cherche un cadeau. Proposez-lui un emballage attentionné.',messages:[{text:'C’est pour un cadeau. Vous pouvez l’emballer ?',time:'12:08'},{text:'Bien sûr ! On prépare un joli emballage avec votre commande.',reply:true,time:'12:10'}]}
@@ -24,13 +24,14 @@ function renderList() {
   const query = byId('chat-search').value.trim().toLocaleLowerCase('fr');
   const visible = conversations.filter((chat) => (selectedFilter === 'all' || chat.channel === selectedFilter) && chat.name.toLocaleLowerCase('fr').includes(query));
   byId('conversation-count').textContent = visible.length;
-  byId('chat-list').innerHTML = visible.length ? visible.map((chat) => `<button class="chat-item ${chat.id === selectedId ? 'active' : ''}" data-chat="${chat.id}" aria-pressed="${chat.id === selectedId}" aria-label="Conversation avec ${chat.name}"><span class="initial-avatar ${chat.color}">${chat.initials}</span><span class="chat-copy"><span class="chat-title">${chat.name}<time>${chat.time}</time></span><span class="chat-preview">${escapeHtml(chat.preview)}</span><span class="chat-channel">${chat.confirmed ? 'Commande confirmée · Paiement attendu' : chat.channel === 'whatsapp' ? 'WhatsApp' : 'TikTok'}</span></span></button>`).join('') : '<p class="empty-chats">Aucune conversation trouvée.</p>';
+  byId('chat-list').innerHTML = visible.length ? visible.map((chat) => `<button class="chat-item ${chat.id === selectedId ? 'active' : ''}" data-chat="${chat.id}" aria-pressed="${chat.id === selectedId}" aria-label="Conversation avec ${chat.name}"><span class="initial-avatar ${chat.channel}">${chat.initials}</span><span class="chat-copy"><span class="chat-title">${chat.name}<time>${chat.time}</time></span><span class="chat-preview">${escapeHtml(chat.preview)}</span><span class="chat-channel ${chat.channel}">${chat.confirmed ? 'Commande confirmée · Paiement attendu' : chat.channel === 'whatsapp' ? 'WhatsApp' : 'TikTok'}</span></span></button>`).join('') : '<p class="empty-chats">Aucune conversation trouvée.</p>';
 }
 function renderThread() {
   const chat = conversations.find((item) => item.id === selectedId);
   byId('thread-name').textContent = chat.name;
   byId('thread-avatar').textContent = chat.initials;
-  byId('thread-avatar').className = `initial-avatar ${chat.color}`;
+  byId('thread-avatar').className = `initial-avatar ${chat.channel}`;
+  byId('messages').closest('.thread').dataset.channel = chat.channel;
   byId('thread-channel').textContent = `${chat.channel === 'whatsapp' ? 'WhatsApp' : 'TikTok'} · ${chat.city}`;
   byId('customer-badge').textContent = chat.loyal ? 'Client fidèle' : 'Premier échange';
   byId('order-summary').textContent = `${chat.product} · ${fcfa(chat.price)}`;
